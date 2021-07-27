@@ -42,6 +42,22 @@ left = 2
 down = 3
 right = 4
 
+
+LayBGr = pygame.image.load('Background\\0.png')
+Lay2 = pygame.Surface((400, 400))
+Lay2.fill(BLACK)
+pygame.draw.line(Lay2, GREEN, (0, 0), (0, 400), 1)
+pygame.draw.line(Lay2, GREEN, (100, 0), (100, 400), 1)
+pygame.draw.line(Lay2, GREEN, (200, 0), (200, 400), 1)
+pygame.draw.line(Lay2, GREEN, (300, 0), (300, 400), 1)
+pygame.draw.line(Lay2, GREEN, (400, 0), (400, 400), 1)
+
+pygame.draw.line(Lay2, GREEN, (0, 0), (400, 0), 1)
+pygame.draw.line(Lay2, GREEN, (0, 100), (400, 100), 1)
+pygame.draw.line(Lay2, GREEN, (0, 200), (400, 200), 1)
+pygame.draw.line(Lay2, GREEN, (0, 300), (400, 300), 1)
+pygame.draw.line(Lay2, GREEN, (0, 400), (400, 400), 1)
+
 ### Tạo các lớp có trong game      
 class Powof2():
     def __init__(self, pos, value):
@@ -145,6 +161,44 @@ class Powof2():
             return
         BackGround.blit(self.surface, (self.x, self.y))
     
+class Menu():
+    def __init__(self):
+        self.statecur = 0
+        self.data = [[0,250,50],[0,250,160],[0,250,270],[0,250,380],[0,250,490]]
+        self.bg = 0
+    def draw(self):
+        
+        for i in range(0, 5):
+            if self.statecur == i:
+                self.data[i][0] = 1
+            else:
+                self.data[i][0] = 0
+            BackGround.blit(pygame.image.load('Menu_IMG\\' + str(self.data[i][0]) + str(i) + '.png'), (self.data[i][1], self.data[i][2]))
+        BackGround.blit(pygame.image.load('Menu_IMG\\l.png'), (130, self.data[self.statecur][2] + 14))
+        BackGround.blit(pygame.image.load('Menu_IMG\\r.png'), (600, self.data[self.statecur][2] + 14))
+    def move(self, direct):
+        if direct == 1:
+            self.statecur += 1
+        if direct == 2:
+            self.statecur -= 1
+        
+
+        if self.statecur == 5:
+            self.statecur = 0
+        if self.statecur == -1:
+            self.statecur = 4
+    def run(self):
+        if self.statecur == 0:
+            StartGame()
+        if self.statecur == 2:
+            self.bg += 1
+            global LayBGr 
+            LayBGr = pygame.image.load('Background\\' + str(self.bg % 4) + '.png')
+
+
+
+
+
 
 def AddBlock():
     arr = []
@@ -155,56 +209,93 @@ def AddBlock():
         pos = random.choice(arr)
         Value[pos] = Powof2(pos, 2)
 
-    
-
-
 Value[5] = Powof2(5, 2)
-
 ### Phần thực thi vòng lặp
-while True:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == KEYDOWN:
-            if event.key == K_UP:
-                for i in range(0, 16):
-                    if Value[i] != 0:
-                        Value[i].Up()
-            if event.key == K_LEFT:
-                for i in range(0, 16):
-                    if Value[i] != 0:
-                        Value[i].Left()
-            if event.key == K_DOWN:
-                for i in range(15, -1, -1):
-                    if Value[i] != 0:
-                        Value[i].Down()
-            if event.key == K_RIGHT:
-                for i in range(15, -1, -1):
-                    if Value[i] != 0:
-                        Value[i].Right()
-            AddBlock()
+def StartGame():
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_UP:
+                    for i in range(0, 16):
+                        if Value[i] != 0:
+                            Value[i].Up()
+                if event.key == K_LEFT:
+                    for i in range(0, 16):
+                        if Value[i] != 0:
+                            Value[i].Left()
+                if event.key == K_DOWN:
+                    for i in range(15, -1, -1):
+                        if Value[i] != 0:
+                            Value[i].Down()
+                if event.key == K_RIGHT:
+                    for i in range(15, -1, -1):
+                        if Value[i] != 0:
+                            Value[i].Right()
+                if event.key == 27:
+                    pygame.quit()
+                    sys.exit()
+                AddBlock()
 
 
-    BackGround.fill(BLACK)
+        BackGround.fill(BLACK)
+        BackGround.blit(LayBGr, (0, 0))
+        BackGround.blit(Lay2, (200, 100))
 
-    
-    for i in range(0, 16):
-        if Value[i] != 0:
-            Value[i].Move()
-            Value[i].Draw()
-        if Trash[i] != 0:
-            Trash[i].Move()
-            for j in range(0, 4):
-                if Trash[i].state[j] != 0:
-                    Trash[i].Draw()
-
-
-
-    pygame.display.update() # Cập nhật các chỉnh sửa giao diện
-    fpsClock.tick(FPS) 
+        
+        for i in range(0, 16):
+            if Value[i] != 0:
+                Value[i].Move()
+                Value[i].Draw()
+            if Trash[i] != 0:
+                Trash[i].Move()
+                for j in range(0, 4):
+                    if Trash[i].state[j] != 0:
+                        Trash[i].Draw()
 
 
+
+        pygame.display.update() # Cập nhật các chỉnh sửa giao diện
+        fpsClock.tick(FPS)
+
+
+VarMenu = Menu()
+
+def StartMenu():
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_UP:
+                    VarMenu.move(2)
+                if event.key == K_LEFT:
+                    VarMenu.move(3)
+                if event.key == K_DOWN:
+                    VarMenu.move(1)
+                if event.key == K_RIGHT:
+                    VarMenu.move(4)
+                if event.key == 13:
+                    VarMenu.run()
+
+        BackGround.fill(BLACK)
+        BackGround.blit(LayBGr, (0, 0))
+        VarMenu.draw()
+
+
+        pygame.display.update() # Cập nhật các chỉnh sửa giao diện
+        fpsClock.tick(FPS)
+
+def main():
+    StartMenu()
+
+
+
+if __name__ == "__main__":
+    main()
 
 
 
