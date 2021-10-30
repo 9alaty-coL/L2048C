@@ -21,7 +21,7 @@ fpsClock = pygame.time.Clock()
 BackGround = pygame.display.set_mode((800, 600))
 pygame.display.set_caption('2048 by Tấn Lộc ^^')
 ### Font chữ cho các layer text
-font = pygame.font.SysFont('consolas', 30)
+font = pygame.font.SysFont('consolas', 15)
 
 Coor = [[200,100],[300,100],[400,100],[500,100]
      ,[200,200],[300,200],[400,200],[500,200]
@@ -36,6 +36,9 @@ Trash = [0, 0, 0, 0,
          0, 0, 0, 0,
          0, 0, 0, 0,
          0, 0, 0, 0]
+Load = [[0,100,120],[0,260,120],[0,420,120],[0,580,120]
+     ,[0,100,270],[0,260,270],[0,420,270],[0,580,270]
+     ,[0,100,420],[0,260,420],[0,420,420],[0,580,420]]
 stop = 0
 up = 1
 left = 2
@@ -89,9 +92,7 @@ class Powof2():
         if self.state[4] == 3:
             self.x += SP
             self.state[self.state[4]] -= SP
-            
-##    def State(self, state):
-##        self.state = state
+
     def Up(self):
         while self.pos > 3:
             if Value[self.pos - 4] == 0:
@@ -190,14 +191,68 @@ class Menu():
     def run(self):
         if self.statecur == 0:
             StartGame()
+        if self.statecur == 1:
+            runMenuLoad()
+                
         if self.statecur == 2:
             self.bg += 1
             global LayBGr 
             LayBGr = pygame.image.load('Background\\' + str(self.bg % 4) + '.png')
+        if self.statecur == 4:
+            pygame.quit()
+            sys.exit()
 
 
 
+def runMenuLoad():
+    while True:
+        pick = 99
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_UP:
+                    VarMenu.move(2)
+                if event.key == K_LEFT:
+                    VarMenu.move(3)
+                if event.key == K_DOWN:
+                    VarMenu.move(1)
+                if event.key == K_RIGHT:
+                    VarMenu.move(4)
+                if event.key == 13:
+                    VarMenu.run()
+                if event.key == 27:
+                    runMenuLoad()
 
+        BackGround.fill(BLACK)
+        f = open('Secret.txt', 'r')
+        while True:
+            line = f.readline()
+            if not line:
+                break
+            if line.find(' ') == -1:
+                Load[int(line)][0] = f.readline()
+        f.close()
+        f = open('Secret.txt', 'r')
+        while True:
+            if not line:
+                break
+            if line.find(' ') == -1 and int(line) == pick:
+                line1 = f.readline()
+                while True:
+                    line2 = f.readline()
+                    if not line2 or line2.find(' ') == -1:
+                        break
+                    pos = int(line2[0:line2.find(' ')])
+                    value = int(line2[line2.find(' ')+1:])
+                    Value[pos] = Powof2(pos, value) 
+                StartGame()      
+
+            
+
+        pygame.display.update() # Cập nhật các chỉnh sửa giao diện
+        fpsClock.tick(FPS)
 
 
 def AddBlock():
@@ -240,6 +295,7 @@ def StartGame():
                 AddBlock()
 
 
+
         BackGround.fill(BLACK)
         BackGround.blit(LayBGr, (0, 0))
         BackGround.blit(Lay2, (200, 100))
@@ -280,6 +336,9 @@ def StartMenu():
                     VarMenu.move(4)
                 if event.key == 13:
                     VarMenu.run()
+                if event.key == 27:
+                    pygame.quit()
+                    sys.exit()
 
         BackGround.fill(BLACK)
         BackGround.blit(LayBGr, (0, 0))
@@ -291,6 +350,7 @@ def StartMenu():
 
 def main():
     StartMenu()
+    StartGame()
 
 
 
