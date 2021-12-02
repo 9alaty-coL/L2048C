@@ -4,8 +4,6 @@ This is my first game developed by python
 
 I used pygame library
 
-All creative implementation ideas are built by me
-
 * The pygame functions consults from:
 
 https://codelearn.io/sharing/lap-trinh-game-co-ban-voi-pygame
